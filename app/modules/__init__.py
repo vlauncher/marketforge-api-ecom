@@ -59,6 +59,10 @@ from app.modules.fulfillment.models import ShipmentStatus, TrackingEvent
 from app.modules.fulfillment.service import FulfillmentService
 from app.modules.fulfillment.router import router as fulfillment_router
 
+from app.modules.analytics.models import VendorPayout, PayoutStatus
+from app.modules.analytics.service import AnalyticsService
+from app.modules.analytics.router import router as analytics_router
+
 __all__ = [
     "User",
     "UserRole",
@@ -132,4 +136,8 @@ __all__ = [
     "TrackingEvent",
     "FulfillmentService",
     "fulfillment_router",
+    "VendorPayout",
+    "PayoutStatus",
+    "AnalyticsService",
+    "analytics_router",
 ]
