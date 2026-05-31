@@ -34,6 +34,8 @@ from app.modules.promotions.router import vendor_router as promotions_vendor_rou
 from app.modules.reviews.router import router as reviews_router
 from app.modules.reviews.router import admin_router as reviews_admin_router
 from app.modules.customers.router import router as customers_router
+from app.modules.fulfillment.router import router as fulfillment_router
+from app.modules.fulfillment.router import vendor_router as fulfillment_vendor_router
 
 
 @asynccontextmanager
@@ -94,6 +96,8 @@ def create_app() -> FastAPI:
     app.include_router(reviews_router)
     app.include_router(reviews_admin_router)
     app.include_router(customers_router)
+    app.include_router(fulfillment_router)
+    app.include_router(fulfillment_vendor_router)
 
     @app.get("/health")
     async def health_check() -> JSONResponse:

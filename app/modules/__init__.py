@@ -55,6 +55,10 @@ from app.modules.customers.models import Wishlist, LoyaltyAccount, LoyaltyTier
 from app.modules.customers.service import CustomersService
 from app.modules.customers.router import router as customers_router
 
+from app.modules.fulfillment.models import ShipmentStatus, TrackingEvent
+from app.modules.fulfillment.service import FulfillmentService
+from app.modules.fulfillment.router import router as fulfillment_router
+
 __all__ = [
     "User",
     "UserRole",
@@ -124,4 +128,8 @@ __all__ = [
     "LoyaltyTier",
     "CustomersService",
     "customers_router",
+    "ShipmentStatus",
+    "TrackingEvent",
+    "FulfillmentService",
+    "fulfillment_router",
 ]
