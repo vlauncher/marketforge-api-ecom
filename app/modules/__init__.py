@@ -47,6 +47,14 @@ from app.modules.promotions.models import Coupon, Promotion, GiftCard
 from app.modules.promotions.service import PromotionsService
 from app.modules.promotions.router import router as promotions_router
 
+from app.modules.reviews.models import Review, Rating
+from app.modules.reviews.service import ReviewsService
+from app.modules.reviews.router import router as reviews_router
+
+from app.modules.customers.models import Wishlist, LoyaltyAccount, LoyaltyTier
+from app.modules.customers.service import CustomersService
+from app.modules.customers.router import router as customers_router
+
 __all__ = [
     "User",
     "UserRole",
@@ -107,4 +115,13 @@ __all__ = [
     "GiftCard",
     "PromotionsService",
     "promotions_router",
+    "Review",
+    "Rating",
+    "ReviewsService",
+    "reviews_router",
+    "Wishlist",
+    "LoyaltyAccount",
+    "LoyaltyTier",
+    "CustomersService",
+    "customers_router",
 ]
