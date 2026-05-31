@@ -43,6 +43,10 @@ from app.modules.payments.models import Payment, Refund, PaymentStatus
 from app.modules.payments.service import PaymentService
 from app.modules.payments.router import router as payments_router
 
+from app.modules.promotions.models import Coupon, Promotion, GiftCard
+from app.modules.promotions.service import PromotionsService
+from app.modules.promotions.router import router as promotions_router
+
 __all__ = [
     "User",
     "UserRole",
@@ -98,4 +102,9 @@ __all__ = [
     "PaymentStatus",
     "PaymentService",
     "payments_router",
+    "Coupon",
+    "Promotion",
+    "GiftCard",
+    "PromotionsService",
+    "promotions_router",
 ]
