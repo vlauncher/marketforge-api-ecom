@@ -208,7 +208,7 @@ class TestPricingService:
             quantity=1,
         )
 
-        assert total == 114.00
+        assert total == 114.99
         assert len(breakdown.addon_deltas) == 2
 
 

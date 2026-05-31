@@ -82,7 +82,10 @@ class Price(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, onupdate=datetime.utcnow, nullable=True)
 
-    currency: Mapped["Currency"] = relationship("Currency", back_populates="prices")
+    currency: Mapped["Currency"] = relationship("Currency", overlaps="prices")
+    product: Mapped[Optional["Product"]] = relationship("Product", foreign_keys=[product_id], overlaps="prices")
+    variant: Mapped[Optional["ProductVariant"]] = relationship("ProductVariant", foreign_keys=[variant_id], overlaps="prices")
+    addon: Mapped[Optional["ProductAddon"]] = relationship("ProductAddon", foreign_keys=[addon_id], overlaps="prices")
 
     __table_args__ = (
         UniqueConstraint("product_id", "variant_id", "addon_id", "currency_id", name="uq_price_product_variant_addon_currency"),
@@ -93,6 +96,6 @@ class Price(Base):
 
 
 from app.modules.catalog.models import Product, ProductVariant, ProductAddon
-Product.prices = relationship("Price", back_populates="product", foreign_keys=[Price.product_id])
-ProductVariant.prices = relationship("Price", back_populates="product", foreign_keys=[Price.variant_id])
-ProductAddon.prices = relationship("Price", back_populates="product", foreign_keys=[Price.addon_id])
+Product.prices = relationship("Price", foreign_keys=[Price.product_id], overlaps="product")
+ProductVariant.prices = relationship("Price", foreign_keys=[Price.variant_id], overlaps="variant")
+ProductAddon.prices = relationship("Price", foreign_keys=[Price.addon_id], overlaps="addon")

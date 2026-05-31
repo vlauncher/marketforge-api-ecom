@@ -236,7 +236,6 @@ class TestCheckoutFlow:
                 "quantity": 1,
                 "unit_price": 99.99,
                 "name": "Test Product",
-                "total_price": 99.99,
             }],
             shipping_address=shipping_address,
             billing_address=None,
@@ -278,7 +277,6 @@ class TestCheckoutFlow:
             "quantity": 1,
             "unit_price": 99.99,
             "name": "Test Product",
-            "total_price": 99.99,
         }]
 
         order1 = await order_service.create_order(
@@ -373,7 +371,6 @@ class TestInventoryReservationOnCheckout:
                 "quantity": 1,
                 "unit_price": 99.99,
                 "name": "Test Product",
-                "total_price": 99.99,
             }],
             shipping_address=shipping_address,
             billing_address=None,
@@ -400,8 +397,6 @@ class TestRefundFlow:
         sample_store,
     ):
         payment = Payment(
-            user_id=sample_user.id,
-            store_id=sample_store.id,
             order_id=1,
             amount=100.00,
             currency_code="USD",
@@ -419,8 +414,9 @@ class TestRefundFlow:
             payment_id=payment.id,
             amount=50.00,
             reason="Partial refund",
+            idempotency_key=None,
         )
 
         assert refund is not None
         assert refund.amount == 50.00
-        assert refund.status == PaymentStatus.REFUNDED
+        assert refund.status == "completed"

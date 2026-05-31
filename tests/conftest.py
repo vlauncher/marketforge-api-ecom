@@ -1,5 +1,5 @@
 import asyncio
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import AsyncGenerator, Generator
 import pytest
 import pytest_asyncio
@@ -9,11 +9,11 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.core.database import Base, get_db
+from app.modules.catalog.models import Category, Brand, Product, ProductVariant, ProductType
+from app.modules.pricing.models import Currency, ExchangeRate, Price
 from app.modules.identity.models import User, UserRole
 from app.modules.vendors.models import Vendor, VendorProfile, VendorStatus
 from app.modules.storefronts.models import Store
-from app.modules.catalog.models import Category, Brand, Product, ProductVariant, ProductType
-from app.modules.pricing.models import Currency, ExchangeRate, Price
 from app.modules.inventory.models import InventoryLocation, InventoryItem, MovementType
 from app.modules.promotions.models import Coupon, Promotion, DiscountType
 
@@ -89,11 +89,11 @@ async def secondary_currency(db_session: AsyncSession) -> Currency:
 
 @pytest_asyncio.fixture
 async def sample_user(db_session: AsyncSession) -> User:
-    from app.core.security import get_password_hash
+    from app.core.security import hash_password
 
     user = User(
         email="test@example.com",
-        password_hash=get_password_hash("password123"),
+        password_hash=hash_password("password123"),
         role=UserRole.CUSTOMER,
         is_active=True,
     )
@@ -160,7 +160,7 @@ async def sample_product(
         slug="test-product",
         description="A test product",
         is_active=True,
-        product_type=ProductType.PHYSICAL,
+        product_type=ProductType.SIMPLE,
     )
     db_session.add(product)
     await db_session.commit()
@@ -207,6 +207,7 @@ async def sample_inventory_item(
 
 @pytest_asyncio.fixture
 async def sample_coupon(db_session: AsyncSession, sample_store: Store) -> Coupon:
+    now = datetime.now(timezone.utc)
     coupon = Coupon(
         store_id=sample_store.id,
         code="SAVE10",
@@ -215,8 +216,8 @@ async def sample_coupon(db_session: AsyncSession, sample_store: Store) -> Coupon
         min_order_amount=0.0,
         max_uses=100,
         is_active=True,
-        valid_from=datetime.now(timezone.utc),
-        valid_until=datetime.now(timezone.utc),
+        valid_from=now,
+        valid_until=now + timedelta(days=30),
     )
     db_session.add(coupon)
     await db_session.commit()
