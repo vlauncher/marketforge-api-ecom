@@ -28,6 +28,21 @@ from app.modules.inventory.models import InventoryLocation, InventoryItem, Inven
 from app.modules.inventory.service import InventoryService
 from app.modules.inventory.router import router as inventory_router
 
+from app.modules.cart.models import Cart, CartItem
+from app.modules.cart.service import CartService
+from app.modules.cart.router import router as cart_router
+
+from app.modules.orders.models import Order, OrderItem, Shipment, OrderStatus
+from app.modules.orders.service import OrderService
+from app.modules.orders.router import router as orders_router
+
+from app.modules.checkout.service import CheckoutService
+from app.modules.checkout.router import router as checkout_router
+
+from app.modules.payments.models import Payment, Refund, PaymentStatus
+from app.modules.payments.service import PaymentService
+from app.modules.payments.router import router as payments_router
+
 __all__ = [
     "User",
     "UserRole",
@@ -66,4 +81,21 @@ __all__ = [
     "MovementType",
     "InventoryService",
     "inventory_router",
+    "Cart",
+    "CartItem",
+    "CartService",
+    "cart_router",
+    "Order",
+    "OrderItem",
+    "Shipment",
+    "OrderStatus",
+    "OrderService",
+    "orders_router",
+    "CheckoutService",
+    "checkout_router",
+    "Payment",
+    "Refund",
+    "PaymentStatus",
+    "PaymentService",
+    "payments_router",
 ]

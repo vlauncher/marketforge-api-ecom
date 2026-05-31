@@ -23,6 +23,12 @@ from app.modules.catalog.router import vendor_router as catalog_vendor_router
 from app.modules.pricing.router import router as pricing_router
 from app.modules.pricing.router import admin_router as pricing_admin_router
 from app.modules.inventory.router import vendor_router as inventory_vendor_router
+from app.modules.cart.router import router as cart_router
+from app.modules.orders.router import router as orders_router
+from app.modules.orders.router import vendor_router as orders_vendor_router
+from app.modules.checkout.router import router as checkout_router
+from app.modules.payments.router import router as payments_router
+from app.modules.payments.router import vendor_router as payments_vendor_router
 
 
 @asynccontextmanager
@@ -72,6 +78,12 @@ def create_app() -> FastAPI:
     app.include_router(pricing_router)
     app.include_router(pricing_admin_router)
     app.include_router(inventory_vendor_router)
+    app.include_router(cart_router)
+    app.include_router(orders_router)
+    app.include_router(orders_vendor_router)
+    app.include_router(checkout_router)
+    app.include_router(payments_router)
+    app.include_router(payments_vendor_router)
 
     @app.get("/health")
     async def health_check() -> JSONResponse:
