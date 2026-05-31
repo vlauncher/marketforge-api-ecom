@@ -32,13 +32,20 @@ def cart_to_response(cart) -> CartResponse:
     )
 
 
-@router.get("", response_model=CartResponse)
+@router.get("", response_model=CartResponse, summary="Get current cart")
 async def get_cart(
     current_user: Optional[Dict[str, Any]] = Depends(get_optional_user),
     session_id: Optional[str] = Query(None),
     store_id: int = Query(1),
     service: CartService = Depends(get_cart_service),
 ) -> CartResponse:
+    """
+    Get the current shopping cart.
+
+    - Authenticated users get their persistent cart
+    - Anonymous users get cart by session_id
+    - Cart is created automatically if it doesn't exist
+    """
     if current_user:
         cart = await service.get_cart_for_user(current_user["user_id"], store_id)
         if cart:
@@ -52,7 +59,7 @@ async def get_cart(
     return cart_to_response(cart)
 
 
-@router.post("/items", response_model=CartItemResponse, status_code=201)
+@router.post("/items", response_model=CartItemResponse, status_code=201, summary="Add item to cart")
 async def add_item(
     item_data: CartItemCreate,
     current_user: Optional[Dict[str, Any]] = Depends(get_optional_user),
@@ -60,6 +67,14 @@ async def add_item(
     store_id: int = Query(1),
     service: CartService = Depends(get_cart_service),
 ) -> CartItemResponse:
+    """
+    Add an item to the shopping cart.
+
+    - **product_id**: ID of the product to add
+    - **variant_id**: Optional specific variant
+    - **quantity**: Number of items (must be > 0)
+    - **selected_addons**: Optional addons to include
+    """
     if current_user:
         cart = await service.get_cart_for_user(current_user["user_id"], store_id)
         if not cart:
