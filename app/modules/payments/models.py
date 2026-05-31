@@ -30,7 +30,7 @@ class Payment(Base):
     payment_method: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     transaction_id: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     idempotency_key: Mapped[Optional[str]] = mapped_column(String(255), unique=True, nullable=True)
-    metadata: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    extra_data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, onupdate=datetime.utcnow, nullable=True)
 

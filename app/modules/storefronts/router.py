@@ -5,7 +5,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.modules.identity.models import UserRole
 from app.modules.identity.dependencies import get_current_user
-from app.modules.vendors.service import VendorService
 from app.modules.storefronts.schemas import (
     StoreCreate,
     StoreUpdate,
@@ -37,6 +36,7 @@ async def get_current_vendor(
 ) -> Dict[str, Any]:
     if current_user["role"] == UserRole.ADMIN:
         return {"vendor_id": None, "is_admin": True, **current_user}
+    from app.modules.vendors.service import VendorService
     vendor_service = VendorService(db)
     vendor = await vendor_service.get_vendor_by_user_id(current_user["user_id"])
     return {"vendor_id": vendor.id, "is_admin": False, **current_user}

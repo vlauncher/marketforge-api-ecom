@@ -14,9 +14,9 @@ class CartService:
 
     async def get_or_create_cart(
         self,
+        store_id: int,
         user_id: Optional[int] = None,
         session_id: Optional[str] = None,
-        store_id: int,
     ) -> Cart:
         if user_id:
             result = await self.db.execute(
