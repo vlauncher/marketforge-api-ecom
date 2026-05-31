@@ -31,6 +31,23 @@ class Settings(BaseSettings):
 
     LOG_LEVEL: str = "INFO"
 
+    STRIPE_API_KEY: str = ""
+    STRIPE_WEBHOOK_SECRET: str = ""
+
+    PAYSTACK_SECRET_KEY: str = ""
+    PAYSTACK_WEBHOOK_SECRET: str = ""
+
+    FLUTTERWAVE_PUBLIC_KEY: str = ""
+    FLUTTERWAVE_SECRET_KEY: str = ""
+    FLUTTERWAVE_WEBHOOK_SECRET: str = ""
+
+    MONNIFY_API_KEY: str = ""
+    MONNIFY_SECRET_KEY: str = ""
+    MONNIFY_CONTRACT_CODE: str = ""
+    MONNIFY_WEBHOOK_SECRET: str = ""
+
+    DEFAULT_PAYMENT_GATEWAY: str = "stripe"
+
     @property
     def cors_origins_list(self) -> List[str]:
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]

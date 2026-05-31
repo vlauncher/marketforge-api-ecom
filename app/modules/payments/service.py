@@ -76,6 +76,25 @@ class PaymentService:
         await self.db.refresh(payment)
         return payment
 
+    async def update_payment_by_reference(
+        self,
+        reference: str,
+        status: PaymentStatus,
+        transaction_id: Optional[str] = None,
+    ) -> Optional[Payment]:
+        result = await self.db.execute(
+            select(Payment).where(Payment.idempotency_key == reference)
+        )
+        payment = result.scalar_one_or_none()
+        if not payment:
+            return None
+        payment.status = status
+        if transaction_id:
+            payment.transaction_id = transaction_id
+        await self.db.flush()
+        await self.db.refresh(payment)
+        return payment
+
     async def complete_payment(self, payment_id: int, transaction_id: str) -> Payment:
         return await self.update_payment_status(
             payment_id=payment_id,

@@ -29,6 +29,8 @@ from app.modules.orders.router import vendor_router as orders_vendor_router
 from app.modules.checkout.router import router as checkout_router
 from app.modules.payments.router import router as payments_router
 from app.modules.payments.router import vendor_router as payments_vendor_router
+from app.modules.payments.webhooks import router as webhooks_router
+from app.modules.payments.gateways import setup_gateways, PaymentGatewayType
 from app.modules.promotions.router import router as promotions_router
 from app.modules.promotions.router import vendor_router as promotions_vendor_router
 from app.modules.reviews.router import router as reviews_router
@@ -51,6 +53,33 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     await redis_client.connect()
     logger.info("Redis connected")
+
+    gateway_type_map = {
+        "stripe": PaymentGatewayType.STRIPE,
+        "paystack": PaymentGatewayType.PAYSTACK,
+        "flutterwave": PaymentGatewayType.FLUTTERWAVE,
+        "monnify": PaymentGatewayType.MONNIFY,
+    }
+    default_gateway = gateway_type_map.get(
+        settings.DEFAULT_PAYMENT_GATEWAY.lower(),
+        PaymentGatewayType.STRIPE,
+    )
+
+    setup_gateways(
+        stripe_key=settings.STRIPE_API_KEY,
+        stripe_webhook_secret=settings.STRIPE_WEBHOOK_SECRET,
+        paystack_key=settings.PAYSTACK_SECRET_KEY,
+        paystack_webhook_secret=settings.PAYSTACK_WEBHOOK_SECRET,
+        flutterwave_public_key=settings.FLUTTERWAVE_PUBLIC_KEY,
+        flutterwave_secret_key=settings.FLUTTERWAVE_SECRET_KEY,
+        flutterwave_webhook_secret=settings.FLUTTERWAVE_WEBHOOK_SECRET,
+        monnify_api_key=settings.MONNIFY_API_KEY,
+        monnify_secret_key=settings.MONNIFY_SECRET_KEY,
+        monnify_contract_code=settings.MONNIFY_CONTRACT_CODE,
+        monnify_webhook_secret=settings.MONNIFY_WEBHOOK_SECRET,
+        default_gateway=default_gateway,
+    )
+    logger.info(f"Payment gateways initialized, default: {settings.DEFAULT_PAYMENT_GATEWAY}")
 
     yield
 
@@ -93,6 +122,7 @@ def create_app() -> FastAPI:
     app.include_router(checkout_router)
     app.include_router(payments_router)
     app.include_router(payments_vendor_router)
+    app.include_router(webhooks_router)
     app.include_router(promotions_router)
     app.include_router(promotions_vendor_router)
     app.include_router(reviews_router)
