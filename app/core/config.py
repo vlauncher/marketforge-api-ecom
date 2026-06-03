@@ -10,7 +10,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    DATABASE_URL: str = "postgresql+asyncpg://marketforge:marketforge_secret@localhost:5432/marketforge_db"
+    DATABASE_URL: str
     REDIS_URL: str = "redis://localhost:6379/0"
 
     SECRET_KEY: str
