@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.exceptions import ValidationError
 from app.modules.identity.dependencies import get_current_user, get_optional_user
 from app.modules.cart.schemas import (
     CartItemCreate,
@@ -54,7 +55,7 @@ async def get_cart(
     elif session_id:
         cart = await service.get_or_create_cart(session_id=session_id, store_id=store_id)
     else:
-        raise ValueError("Either authentication or session_id is required")
+        raise ValidationError("Either authentication or session_id is required")
 
     return cart_to_response(cart)
 
@@ -82,7 +83,7 @@ async def add_item(
     elif session_id:
         cart = await service.get_or_create_cart(session_id=session_id, store_id=store_id)
     else:
-        raise ValueError("Either authentication or session_id is required")
+        raise ValidationError("Either authentication or session_id is required")
 
     item = await service.add_item(cart.id, item_data)
     return CartItemResponse.model_validate(item)

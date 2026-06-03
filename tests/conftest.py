@@ -240,3 +240,15 @@ class MockExchangeRateProvider:
 @pytest.fixture
 def mock_exchange_rate_provider() -> MockExchangeRateProvider:
     return MockExchangeRateProvider()
+
+
+@pytest_asyncio.fixture
+async def inventory_service(db_session: AsyncSession):
+    from app.modules.inventory.service import InventoryService
+    return InventoryService(db_session)
+
+
+@pytest_asyncio.fixture
+async def pricing_service(db_session: AsyncSession):
+    from app.modules.pricing.service import PricingService
+    return PricingService(db_session)

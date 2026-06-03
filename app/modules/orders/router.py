@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.exceptions import ForbiddenError
 from app.modules.identity.dependencies import get_current_user
 from app.modules.identity.models import UserRole
 from app.modules.orders.schemas import (
@@ -52,7 +53,7 @@ async def get_order(
 ) -> OrderDetailResponse:
     order = await service.get_order_by_id(order_id)
     if order.user_id != current_user["user_id"] and current_user["role"] != UserRole.ADMIN:
-        raise PermissionError("You can only view your own orders")
+        raise ForbiddenError("You can only view your own orders")
     return OrderDetailResponse.model_validate(order)
 
 
@@ -73,7 +74,7 @@ async def cancel_order(
 ) -> OrderResponse:
     order = await service.get_order_by_id(order_id)
     if order.user_id != current_user["user_id"] and current_user["role"] != UserRole.ADMIN:
-        raise PermissionError("You can only cancel your own orders")
+        raise ForbiddenError("You can only cancel your own orders")
     order = await service.cancel_order(order_id)
     return OrderResponse.model_validate(order)
 

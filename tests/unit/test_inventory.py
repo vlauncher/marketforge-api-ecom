@@ -194,7 +194,7 @@ class TestInventoryMovements:
             "ORDER-MOV-001"
         )
 
-        movements = await inventory_service.get_item_movements(sample_inventory_item.id)
+        movements = await inventory_service.get_movement_history(item_id=sample_inventory_item.id)
 
         assert len(movements) >= 1
         reserve_movements = [m for m in movements if m.movement_type == MovementType.RESERVED]
@@ -207,15 +207,16 @@ class TestInventoryMovements:
         sample_inventory_item: InventoryItem,
         inventory_service: InventoryService,
     ):
-        await inventory_service.adjust_inventory(
-            item_id=sample_inventory_item.id,
+        await inventory_service.adjust_stock(
+            location_id=sample_inventory_item.location_id,
+            product_id=sample_inventory_item.product_id,
             quantity_change=10,
             notes="Test adjustment",
             reference_id="ADJ-001",
             reference_type="adjustment",
         )
 
-        movements = await inventory_service.get_item_movements(sample_inventory_item.id)
+        movements = await inventory_service.get_movement_history(item_id=sample_inventory_item.id)
 
         assert len(movements) >= 1
         adjustment_movements = [m for m in movements if m.reference_id == "ADJ-001"]

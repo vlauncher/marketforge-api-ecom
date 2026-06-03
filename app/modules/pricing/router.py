@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.exceptions import ForbiddenError
 from app.modules.identity.dependencies import get_current_user
 from app.modules.identity.models import UserRole
 from app.modules.pricing.schemas import (
@@ -84,7 +85,7 @@ async def create_currency(
     service: PricingService = Depends(get_pricing_service),
 ) -> CurrencyResponse:
     if current_user["role"] != UserRole.ADMIN:
-        raise PermissionError("Admin access required")
+        raise ForbiddenError("Admin access required")
     currency = await service.create_currency(currency_data)
     return CurrencyResponse.model_validate(currency)
 
@@ -97,7 +98,7 @@ async def update_currency(
     service: PricingService = Depends(get_pricing_service),
 ) -> CurrencyResponse:
     if current_user["role"] != UserRole.ADMIN:
-        raise PermissionError("Admin access required")
+        raise ForbiddenError("Admin access required")
     currency = await service.update_currency(currency_id, currency_data)
     return CurrencyResponse.model_validate(currency)
 
@@ -107,7 +108,7 @@ async def update_exchange_rates(
     current_user: Dict[str, Any] = Depends(get_current_user),
 ) -> Dict[str, str]:
     if current_user["role"] != UserRole.ADMIN:
-        raise PermissionError("Admin access required")
+        raise ForbiddenError("Admin access required")
     from app.modules.pricing.exchange_rates import exchange_rate_provider
     await exchange_rate_provider.fetch_rates("USD")
     return {"status": "Exchange rates updated"}

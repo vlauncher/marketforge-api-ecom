@@ -39,10 +39,10 @@ class AuthService:
             raise UnauthorizedError("User account is inactive")
 
         access_token = create_access_token(
-            data={"sub": user.id, "email": user.email, "role": user.role.value}
+            data={"sub": str(user.id), "email": user.email, "role": user.role.value}
         )
         refresh_token = create_refresh_token(
-            data={"sub": user.id, "email": user.email, "role": user.role.value}
+            data={"sub": str(user.id), "email": user.email, "role": user.role.value}
         )
 
         return Token(access_token=access_token, refresh_token=refresh_token)
@@ -52,7 +52,11 @@ class AuthService:
         if not payload:
             raise UnauthorizedError("Invalid or expired refresh token")
 
-        user_id = payload.get("sub")
+        user_id_str = payload.get("sub")
+        try:
+            user_id = int(user_id_str)
+        except (ValueError, TypeError):
+            raise UnauthorizedError("Invalid or expired refresh token")
         result = await self.db.execute(select(User).where(User.id == user_id))
         user = result.scalar_one_or_none()
 
@@ -60,10 +64,10 @@ class AuthService:
             raise UnauthorizedError("User not found or inactive")
 
         new_access_token = create_access_token(
-            data={"sub": user.id, "email": user.email, "role": user.role.value}
+            data={"sub": str(user.id), "email": user.email, "role": user.role.value}
         )
         new_refresh_token = create_refresh_token(
-            data={"sub": user.id, "email": user.email, "role": user.role.value}
+            data={"sub": str(user.id), "email": user.email, "role": user.role.value}
         )
 
         return Token(access_token=new_access_token, refresh_token=new_refresh_token)

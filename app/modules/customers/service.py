@@ -144,7 +144,7 @@ class CustomersService:
             },
             LoyaltyTier.PLATINUM: {
                 "min_points": 10000,
-                "max_points": float("inf"),
+                "max_points": None,
                 "multiplier": 2.0,
                 "benefits": ["All Gold benefits", "VIP support", "Exclusive events", "Personal shopper"],
             },
@@ -163,7 +163,7 @@ class CustomersService:
 
     def _points_to_next_tier(self, current_tier: LoyaltyTier, lifetime_points: int) -> Optional[int]:
         tier_info = self.get_tier_info(current_tier)
-        next_tier_points = tier_info.get("max_points", float("inf"))
-        if next_tier_points == float("inf"):
+        next_tier_points = tier_info.get("max_points")
+        if next_tier_points is None:
             return None
         return int(next_tier_points + 1 - lifetime_points)

@@ -1,8 +1,10 @@
 from typing import Dict, Any, Optional, List
 from fastapi import APIRouter, Depends, Query, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.exceptions import ValidationError
 from app.modules.identity.dependencies import get_current_user
 from app.modules.storefronts.service import StorefrontService
 from app.modules.vendors.service import VendorService
@@ -54,7 +56,7 @@ async def get_current_vendor_store(
     vendor_service = VendorService(db)
     vendor = await vendor_service.get_vendor_by_user_id(current_user["user_id"])
     if not vendor.stores:
-        raise ValueError("Vendor has no stores")
+        raise ValidationError("Vendor has no stores")
     return vendor.stores[0].id
 
 

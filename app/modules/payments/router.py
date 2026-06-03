@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.exceptions import ForbiddenError
 from app.modules.identity.dependencies import get_current_user
 from app.modules.identity.models import UserRole
 from app.modules.payments.schemas import (
@@ -83,7 +84,7 @@ async def create_refund(
     service: PaymentService = Depends(get_payment_service),
 ) -> RefundResponse:
     if current_user["role"] not in (UserRole.ADMIN, UserRole.VENDOR):
-        raise PermissionError("Vendor or admin access required")
+        raise ForbiddenError("Vendor or admin access required")
 
     refund = await service.create_refund(
         payment_id=payment_id,

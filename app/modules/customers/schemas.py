@@ -46,6 +46,6 @@ class RedeemPointsRequest(BaseModel):
 class LoyaltyTierInfo(BaseModel):
     tier: LoyaltyTier
     min_points: int
-    max_points: int
+    max_points: Optional[int]
     multiplier: float
     benefits: List[str]

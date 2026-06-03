@@ -3,6 +3,7 @@ from fastapi import Depends, HTTPException, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.exceptions import ForbiddenError
 from app.core.security import verify_access_token
 from app.modules.identity.models import User, UserRole
 from app.modules.identity.service import AuthService
@@ -21,8 +22,13 @@ async def get_current_user(
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
 
-    user_id = payload.get("sub")
-    if not user_id:
+    user_id_str = payload.get("sub")
+    if not user_id_str:
+        raise HTTPException(status_code=401, detail="Invalid token payload")
+
+    try:
+        user_id = int(user_id_str)
+    except ValueError:
         raise HTTPException(status_code=401, detail="Invalid token payload")
 
     auth_service = AuthService(db)
@@ -54,8 +60,13 @@ async def get_optional_user(
     if not payload:
         return None
 
-    user_id = payload.get("sub")
-    if not user_id:
+    user_id_str = payload.get("sub")
+    if not user_id_str:
+        return None
+
+    try:
+        user_id = int(user_id_str)
+    except ValueError:
         return None
 
     try:
@@ -77,7 +88,7 @@ def require_role(*allowed_roles: UserRole):
         async def wrapper(*args, current_user: Dict[str, Any] = Depends(get_current_user), **kwargs):
             user_role = current_user.get("role")
             if user_role not in allowed_roles:
-                raise HTTPException(status_code=403, detail="Insufficient permissions")
+                raise ForbiddenError("Insufficient permissions")
             return await func(*args, current_user=current_user, **kwargs)
         wrapper.__name__ = func.__name__
         return wrapper
@@ -88,7 +99,7 @@ async def require_admin(
     current_user: Dict[str, Any] = Depends(get_current_user),
 ) -> Dict[str, Any]:
     if current_user.get("role") != UserRole.ADMIN:
-        raise HTTPException(status_code=403, detail="Admin access required")
+        raise ForbiddenError("Admin access required")
     return current_user
 
 
@@ -97,5 +108,5 @@ async def require_vendor_or_admin(
 ) -> Dict[str, Any]:
     role = current_user.get("role")
     if role not in (UserRole.VENDOR, UserRole.ADMIN):
-        raise HTTPException(status_code=403, detail="Vendor or admin access required")
+        raise ForbiddenError("Vendor or admin access required")
     return current_user

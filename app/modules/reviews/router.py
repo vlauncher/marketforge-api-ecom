@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
+from app.core.exceptions import ForbiddenError
 from app.modules.identity.dependencies import get_current_user
 from app.modules.identity.models import UserRole
 from app.modules.reviews.schemas import (
@@ -111,6 +112,6 @@ async def approve_review(
     service: ReviewsService = Depends(get_reviews_service),
 ) -> ReviewResponse:
     if current_user["role"] != UserRole.ADMIN:
-        raise PermissionError("Admin access required")
+        raise ForbiddenError("Admin access required")
     review = await service.approve_review(review_id)
     return ReviewResponse.model_validate(review)
